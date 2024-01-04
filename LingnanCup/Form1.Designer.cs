@@ -200,13 +200,13 @@
             this.label89 = new System.Windows.Forms.Label();
             this.textBox8 = new System.Windows.Forms.TextBox();
             this.label90 = new System.Windows.Forms.Label();
-            this.label91 = new System.Windows.Forms.Label();
-            this.label92 = new System.Windows.Forms.Label();
             this.label44 = new System.Windows.Forms.Label();
             this.label93 = new System.Windows.Forms.Label();
             this.button43 = new System.Windows.Forms.Button();
             this.button31 = new System.Windows.Forms.Button();
             this.button44 = new System.Windows.Forms.Button();
+            this.button81 = new System.Windows.Forms.Button();
+            this.label31 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // textBox1
@@ -427,8 +427,8 @@
             // 
             // label21
             // 
-            this.label21.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.label21.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label21.AutoEllipsis = true;
             this.label21.AutoSize = true;
@@ -443,8 +443,8 @@
             // 
             // label23
             // 
-            this.label23.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.label23.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label23.AutoEllipsis = true;
             this.label23.AutoSize = true;
@@ -2109,29 +2109,6 @@
             this.label90.TabIndex = 215;
             this.label90.Text = "宣言板：";
             // 
-            // label91
-            // 
-            this.label91.AutoSize = true;
-            this.label91.Font = new System.Drawing.Font("宋体", 10F);
-            this.label91.Location = new System.Drawing.Point(17, 875);
-            this.label91.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label91.Name = "label91";
-            this.label91.Size = new System.Drawing.Size(669, 20);
-            this.label91.TabIndex = 217;
-            this.label91.Text = "本加分具体解释权归组委会所有；如有疑问@银枪天马耀骑士，@YuAn梦咨询";
-            // 
-            // label92
-            // 
-            this.label92.AutoSize = true;
-            this.label92.Font = new System.Drawing.Font("宋体", 10F);
-            this.label92.Location = new System.Drawing.Point(17, 908);
-            this.label92.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label92.Name = "label92";
-            this.label92.Size = new System.Drawing.Size(549, 20);
-            this.label92.TabIndex = 218;
-            this.label92.Text = "作者@牛妈，如有bug请立即反馈（如算错分、按键无反应等）";
-            this.label92.Click += new System.EventHandler(this.label92_Click);
-            // 
             // label44
             // 
             this.label44.AutoSize = true;
@@ -2189,17 +2166,40 @@
             this.button44.UseVisualStyleBackColor = true;
             this.button44.Click += new System.EventHandler(this.button44_Click);
             // 
+            // button81
+            // 
+            this.button81.Location = new System.Drawing.Point(621, 869);
+            this.button81.Margin = new System.Windows.Forms.Padding(4);
+            this.button81.Name = "button81";
+            this.button81.Size = new System.Drawing.Size(118, 34);
+            this.button81.TabIndex = 223;
+            this.button81.Text = "鸣谢";
+            this.button81.UseVisualStyleBackColor = true;
+            this.button81.Click += new System.EventHandler(this.button81_Click);
+            // 
+            // label31
+            // 
+            this.label31.AutoSize = true;
+            this.label31.Font = new System.Drawing.Font("宋体", 10F);
+            this.label31.ForeColor = System.Drawing.Color.Red;
+            this.label31.Location = new System.Drawing.Point(18, 875);
+            this.label31.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label31.Name = "label31";
+            this.label31.Size = new System.Drawing.Size(569, 20);
+            this.label31.TabIndex = 224;
+            this.label31.Text = "作者中大@牛妈，如有bug（如无法点击、算分错误）请直接反馈";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1691, 1013);
+            this.Controls.Add(this.label31);
+            this.Controls.Add(this.button81);
             this.Controls.Add(this.button44);
             this.Controls.Add(this.button31);
             this.Controls.Add(this.button43);
             this.Controls.Add(this.label93);
-            this.Controls.Add(this.label92);
-            this.Controls.Add(this.label91);
             this.Controls.Add(this.textBox8);
             this.Controls.Add(this.label90);
             this.Controls.Add(this.label88);
@@ -2556,13 +2556,13 @@
         private System.Windows.Forms.Label label89;
         private System.Windows.Forms.TextBox textBox8;
         private System.Windows.Forms.Label label90;
-        private System.Windows.Forms.Label label91;
-        private System.Windows.Forms.Label label92;
         private System.Windows.Forms.Label label44;
         private System.Windows.Forms.Label label93;
         private System.Windows.Forms.Button button43;
         private System.Windows.Forms.Button button31;
         private System.Windows.Forms.Button button44;
+        private System.Windows.Forms.Button button81;
+        private System.Windows.Forms.Label label31;
     }
 }
 

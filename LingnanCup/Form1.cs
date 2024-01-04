@@ -1421,5 +1421,16 @@ namespace LingnanCup
             button44.BackColor = Color.Pink;
             Refresh_Special();
         }
+
+        private void button81_Click(object sender, EventArgs e)
+        {
+
+            MessageBox.Show("明日方舟-萨米肉鸽计分器，使用的规则为岭南杯计分方式，感谢所有为该规则付出的人，以下排名不分先后：\n\n安大@你看到了七个字、南科大@画圆圈的圈圈、深大@银枪天马耀骑士、广工@YuAn梦、中大@hzhzh、仲恺@油漆、莞工@梦、深大@wadu、广工@儚い、华工@鹤舞苍天、广海@今予、中大@漠烟沉、广金@水镜、广海@yu\n\n如有规则上的疑问可以提issue，我会转给负责人深大@银枪天马耀骑士，广工@YuAn梦咨询\n\n欢迎加入广东高校联合群：813804119，记得标注学校\n", "鸣谢");
+        }
+
+        private void label91_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

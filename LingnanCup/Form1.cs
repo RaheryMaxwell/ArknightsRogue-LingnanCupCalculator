@@ -8,6 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace LingnanCup
@@ -24,62 +25,53 @@ namespace LingnanCup
 
         public int duck = 0;
         public int bear = 0;
-        public int dog = 0;//这三个是隐藏怪的数量
+        public int dog = 0;
+        public int mouse = 0;
+        //这四个是隐藏怪的数量
+
+        public int moneyBonus = 0;
+        //取钱次数
 
         public int end = 0;
         /*结局，使用位运算判断
-        *1-巍峨银淞、2-深寒造像
-        *4-萨米之觞、8-虚无之偶
-        *16-园丁、32-哨兵、64-哨兵仅击杀
-        *128-时间之沙、256迈入永恒
-        *512-无垠赠礼
-         */
+        *1-憧憬未来、2-双王记、4-天使之城
+        */
 
+        public bool isGetHatred = false; //是否拥有死仇时代的恨意
+        public int hatredEmerg = 0;
+        public bool isEW = false; //是否使用了EW
+        public bool isMagic = false;//是否使用术特分队
+        public bool isBluePrint = false;//是否使用蓝图分队。
         public int special = 0;
         /*
          * 特殊事件，使用位运算判断
-         * 1-大地醒转、2-呼吸、4-夺树者
-         * 8-目空一些、16-图像损毁
-         * 32-天途半道无漏、64-豪华车队击杀熊
-         * 128-英雄无名无漏、256-英雄无名仅通关
-         * 512-正义使者无漏、1024正义使者仅通关
-         * 2048-亘古仇敌
-         * 4096-白棠
+         * 1-赴敌者、2-或然面纱、4-离歌的庭院
+         * 8-死仇鸭本无漏、16-死仇鸭本仅通关
+         * 32-鸭本无漏、64-鸭本仅通关
+         * 128-死仇战场侧面无漏、256-死仇战场侧面仅通关
+         * 512-死仇熊关无漏、1024-死仇熊关仅通关、2048-熊关无漏
+         * 4096-四层以上鸭关无漏
+         * 8192-白糖
          */
         public int heroKill = 0;//英雄无名仅通关击杀数
         public int justiceKill = 0;//正义使者仅通关击杀数
 
-        public double[] specialBonus = { 40, 50, 60, 3.02, 3.02, 40, 50, 150, 30, 250, 90, 30.2 , 250};
+        public double[] specialBonus = { 40, 50, 50, 150, 80, 130, 50, 80, 50, 100, 50, 30, 80, 250};
         private void Refresh_Special()
         {
-            if((special & 256) == 0)
+            if (isGetHatred == false)
             {
-                //仅有英雄无名仅通关开启时，该项才有效
-                heroKill = 0;
+                //仅有拥有死仇时代的恨意的时候，此项生效。
+                hatredEmerg = 0;
             }
-            label81.Text = heroKill.ToString();
-
-            if ((special & 1024) == 0)
-            {
-                //仅有正义使者仅通关开启时，该项才有效
-                justiceKill = 0;
-            }
-            label84.Text = justiceKill.ToString();
+            label20.Text = hatredEmerg.ToString();
 
             double bonus = 0;
-            for(int i = 0; i < 13; i++)
+            for(int i = 0; i < 14; i++)
             {
                 if((special & (1 << i)) != 0)
                 {
                     bonus += specialBonus[i];
-                    if(i == 8)
-                    {
-                        bonus += heroKill * 15;
-                    }
-                    if(i == 10)
-                    {
-                        bonus += 40 * justiceKill;
-                    }
                 }
             }
             label80.Text = bonus.ToString();
@@ -87,7 +79,7 @@ namespace LingnanCup
         }
 
         //每一个,低16位为分数，高16位为个数
-        public int[] emergencyFight = { 40, 60, 40, 40, 60, 100, 120, 120, 140, 160, 180, 90, 50, 70, 70, 120, 120, 140, 70, 150 };
+        public int[] emergencyFight = { 30, 60, 80, 100, 90, 80, 40, 120, 120, 160, 180, 90, 50, 70, 70, 120, 120, 140, 70, 150 };
         private void emergencyFightAdd(int id)
         {
             emergencyFight[id] += (1 << 16);
@@ -124,32 +116,19 @@ namespace LingnanCup
 
         public void Money_Change()
         {
-            if(startMoney > 999)
-            {
-                startMoney = 999;
-            }else if(startMoney < 0)
-            {
-                startMoney = 0;
-            }
-            textBox6.Text = startMoney.ToString();
 
-            if (endMoney > 999)
+            if(moneyBonus < 0)
             {
-                endMoney = 999;
+                moneyBonus = 0;
             }
-            else if (endMoney < 0)
-            {
-                endMoney = 0;
-            }
-            textBox7.Text = endMoney.ToString();
+            label92.Text = moneyBonus.ToString();
 
-
-            int subBonus = 0;
-            if(startMoney - endMoney >= 90)
+            int moneyDefine = 0;
+            if (moneyBonus > 10)
             {
-                subBonus = -(startMoney - endMoney - 90) * 20;
+                moneyDefine = -50 * (moneyBonus - 10);
             }
-            label88.Text = subBonus.ToString();
+            label88.Text = moneyDefine.ToString();
             Refresh_All_Bonus();
         }
 
@@ -157,25 +136,6 @@ namespace LingnanCup
         public int board = 0;
         public int endBonus = 0;
 
-        private void Refresh_Collection()
-        {
-            if(collection < 0)
-            {
-                collection = 0;
-            }
-            textBox5.Text = collection.ToString();
-            Refresh_All_Bonus();
-        }
-
-        private void Refresh_Board()
-        {
-            if (board < 0)
-            {
-                board = 0;
-            }
-            textBox8.Text = board.ToString();
-            Refresh_All_Bonus();
-        }
         private void Refresh_endBonus()
         {
             if (endBonus < 0)
@@ -192,25 +152,22 @@ namespace LingnanCup
             {
                 textBox4.Text = "0";
             }
-            if (textBox5.Text == "")
-            {
-                textBox5.Text = "0";
-            }
-            if (textBox6.Text == "")
-            {
-                textBox6.Text = "0";
-            }
-            if (textBox7.Text == "")
-            {
-                textBox7.Text = "0";
-            }
-            if (textBox8.Text == "")
-            {
-                textBox8.Text = "0";
-            }
             double temp = Double.Parse(label62.Text) + Double.Parse(label63.Text) + Double.Parse(label64.Text) + Double.Parse(label88.Text)
-                + Double.Parse(label65.Text) + Double.Parse(label80.Text) + 10*Double.Parse(textBox5.Text) + 5*Double.Parse(textBox8.Text)
-                + Double.Parse(textBox4.Text);
+                + Double.Parse(label65.Text) + Double.Parse(label80.Text) +
+                + Double.Parse(textBox4.Text) - 30*Double.Parse(label20.Text);
+            if (isEW == true)
+            {
+                temp *= 0.8;
+            }
+            if(isMagic == true)
+            {
+                temp *= 0.9;
+            }
+            if (isBluePrint == true)
+            {
+                temp = 0;
+            }
+
             label93.Text = temp.ToString();
         }
 
@@ -220,26 +177,27 @@ namespace LingnanCup
             label8.Text = temporaryRecruitmentSix.ToString();
             label25.Text = temporaryRecruitmentFive.ToString();
             label27.Text = temporaryRecruitmentFour.ToString();
-            int temporaryRecruitmentBonus = 10 * temporaryRecruitmentFour + 20 * temporaryRecruitmentFive + 50 * temporaryRecruitmentSix;
+            int temporaryRecruitmentBonus = 10 * temporaryRecruitmentFour + 20 * temporaryRecruitmentFive + 30 * temporaryRecruitmentSix;
             label62.Text = temporaryRecruitmentBonus.ToString();
             Refresh_All_Bonus();
         }
 
-        private void Refresh_DuckBearDog()
+        private void Refresh_DuckBearDogMouse()
         {
             label10.Text = dog.ToString();
             label14.Text = duck.ToString();
             label12.Text = bear.ToString();
-            int bonus = (duck + bear + dog)*20;
+            label32.Text = mouse.ToString();
+            int bonus = (duck + bear + dog + mouse)*10;
             label64.Text = bonus.ToString();
             Refresh_All_Bonus();
         }
 
-        public int[] bossBonus = { 80, 200, 120, 250, 150, 650, 200, 200, 350, 80 };
+        public int[] bossBonus = { 0, 150, 120 };
         private void Refresh_End()
         {
             int endBonus = 0;
-            for(int i = 0; i < 10; i++)
+            for(int i = 0; i < 3; i++)
             {
                 if((end & (1 << i)) != 0)
                 {
@@ -283,13 +241,12 @@ namespace LingnanCup
                 return;
             }
 
-            if((end & 14) != 0)
+            if((end & 2) != 0)
             {
-                end &= (~14);
+                end &= (~2);
                 //234不能和1同时存在，因此要先清空234位
                 button2.BackColor = Color.FromArgb(224, 224, 224);
                 button33.BackColor = Color.FromArgb(224, 224, 224);
-                button34.BackColor = Color.FromArgb(224, 224, 224);
             }
             end |= 1;
             button1.BackColor = Color.Pink;
@@ -307,63 +264,8 @@ namespace LingnanCup
                 Refresh_End();
                 return;
             }
-
-            if ((end & 11) != 0)
-            {
-                end &= (~11);
-                //234不能和1同时存在，因此要先清空234位
-                button1.BackColor = Color.FromArgb(224, 224, 224);
-                button33.BackColor = Color.FromArgb(224, 224, 224);
-                button34.BackColor = Color.FromArgb(224, 224, 224);
-            }
             end |= 4;
             button2.BackColor = Color.Pink;
-            Refresh_End();
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            if ((end & 16) != 0)
-            {
-                //重复点击则取消
-                button3.BackColor = Color.FromArgb(224, 224, 224);
-                end &= (~16);
-                Refresh_End();
-                return;
-            }
-
-            //3,35,68
-            if ((end & 96) != 0)
-            {
-                end &= (~96);
-                //234不能和1同时存在，因此要先清空234位
-                button35.BackColor = Color.FromArgb(224, 224, 224);
-                button68.BackColor = Color.FromArgb(224, 224, 224);
-            }
-            end |= 16;
-            button3.BackColor = Color.Pink;
-            Refresh_End();
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-            if ((end & 128) != 0)
-            {
-                //重复点击则取消
-                button4.BackColor = Color.FromArgb(224, 224, 224);
-                end &= (~128);
-                Refresh_End();
-                return;
-            }
-            //时间之沙、迈入永恒与哨兵仅击杀互相不能共存
-            if ((end & 320) != 0)
-            {
-                end &= (~320);
-                button68.BackColor = Color.FromArgb(224, 224, 224);
-                button36.BackColor = Color.FromArgb(224, 224, 224);
-            }
-            end |= 128;
-            button4.BackColor = Color.Pink;
             Refresh_End();
         }
 
@@ -388,25 +290,24 @@ namespace LingnanCup
             end = 0;
             button1.BackColor = Color.FromArgb(224, 224, 224);
             button2.BackColor = Color.FromArgb(224, 224, 224);
-            button3.BackColor = Color.FromArgb(224, 224, 224);
-            button4.BackColor = Color.FromArgb(224, 224, 224);
             button33.BackColor = Color.FromArgb(224, 224, 224);
-            button34.BackColor = Color.FromArgb(224, 224, 224);
-            button35.BackColor = Color.FromArgb(224, 224, 224);
-            button36.BackColor = Color.FromArgb(224, 224, 224);
-            button68.BackColor = Color.FromArgb(224, 224, 224);
             Refresh_End();
 
             duck = 0;
             bear = 0;
             dog = 0;
-            Refresh_DuckBearDog();
+            mouse = 0;
+            Refresh_DuckBearDogMouse();
 
-
+            isGetHatred = false;
+            isBluePrint = false;
+            isEW = false;
+            isMagic = false;
             for(int i = 0; i < emergencyFight.Length; i++)
             {
                 emergencyFight[i] &= 65535;
             }
+            label20.Text = "0";
             label35.Text = "0";
             label33.Text = "0";
             label40.Text = "0";
@@ -416,48 +317,33 @@ namespace LingnanCup
             label51.Text = "0";
             label49.Text = "0";
             label46.Text = "0";
-            label44.Text = "0";
-            label22.Text = "0";
-            label59.Text = "0";
-            label57.Text = "0";
-            label55.Text = "0";
-            label77.Text = "0";
-            label75.Text = "0";
-            label73.Text = "0";
-            label70.Text = "0";
-            label68.Text = "0";
-            label66.Text = "0";
             emergencyFightRefresh();
 
             special = 0;
+            button3.BackColor = Color.FromArgb(224, 224, 224);
+            button4.BackColor = Color.FromArgb(224, 224, 224);
             button5.BackColor = Color.FromArgb(224, 224, 224);
+            button16.BackColor = Color.FromArgb(224, 224, 224);
+            button17.BackColor = Color.FromArgb(224, 224, 224);
             button37.BackColor = Color.FromArgb(224, 224, 224);
             button38.BackColor = Color.FromArgb(224, 224, 224);
             button44.BackColor = Color.FromArgb(224, 224, 224);
             button80.BackColor = Color.FromArgb(224, 224, 224);
             button79.BackColor = Color.FromArgb(224, 224, 224);
-            button71.BackColor = Color.FromArgb(224, 224, 224);
             button70.BackColor = Color.FromArgb(224, 224, 224);
             button43.BackColor = Color.FromArgb(224, 224, 224);
-            button73.BackColor = Color.FromArgb(224, 224, 224);
-            button77.BackColor = Color.FromArgb(224, 224, 224);
-            button74.BackColor = Color.FromArgb(224, 224, 224);
-            button78.BackColor = Color.FromArgb(224, 224, 224);
+            button28.BackColor = Color.FromArgb(224, 224, 224);
+            button29.BackColor = Color.FromArgb(224, 224, 224);
+            button30.BackColor = Color.FromArgb(224, 224, 224);
+            button31.BackColor = Color.FromArgb(224, 224, 224);
+            button70.BackColor = Color.FromArgb(224, 224, 224);
+            button43.BackColor = Color.FromArgb(224, 224, 224);
+            button34.BackColor = Color.FromArgb(224, 224, 224);
+            button35.BackColor = Color.FromArgb(224, 224, 224);
             Refresh_Special();
 
-            startMoney = 0;
-            endMoney = 0;
-            textBox6.Text = "0";
-            textBox7.Text = "0";
+            moneyBonus = 0;
             Money_Change();
-
-            collection = 0;
-            textBox5.Text = "0";
-            Refresh_Collection();
-
-            board = 0;
-            textBox8.Text = "0";
-            Refresh_Board();
 
             endBonus = 0;
             textBox4.Text = "0";
@@ -518,61 +404,14 @@ namespace LingnanCup
                 return;
             }
 
-            if ((end & 13) != 0)
+            if ((end & 1) != 0)
             {
-                end &= (~13);
+                end &= (~1);
                 button1.BackColor = Color.FromArgb(224,224,224);
                 button2.BackColor = Color.FromArgb(224, 224, 224);
-                button34.BackColor = Color.FromArgb(224, 224, 224);
             }
             end |= 2;
             button33.BackColor = Color.Pink;
-            Refresh_End();
-        }
-
-        private void button35_Click(object sender, EventArgs e)
-        {
-            if ((end & 32) != 0)
-            {
-                //重复点击则取消
-                button35.BackColor = Color.FromArgb(224, 224, 224);
-                end &= (~32);
-                Refresh_End();
-                return;
-            }
-
-            //3,35,68
-            if ((end & 80) != 0)
-            {
-                end &= (~80);
-                //234不能和1同时存在，因此要先清空234位
-                button3.BackColor = Color.FromArgb(224, 224, 224);
-                button68.BackColor = Color.FromArgb(224, 224, 224);
-            }
-            end |= 32;
-            button35.BackColor = Color.Pink;
-            Refresh_End();
-        }
-
-        private void button36_Click(object sender, EventArgs e)
-        {
-            if ((end & 256) != 0)
-            {
-                //重复点击则取消
-                button36.BackColor = Color.FromArgb(224, 224, 224);
-                end &= (~256);
-                Refresh_End();
-                return;
-            }
-            //时间之沙、迈入永恒与哨兵仅击杀互相不能共存
-            if ((end & 192) != 0)
-            {
-                end &= (~192);
-                button4.BackColor = Color.FromArgb(224, 224, 224);
-                button68.BackColor = Color.FromArgb(224, 224, 224);
-            }
-            end |= 256;
-            button36.BackColor = Color.Pink;
             Refresh_End();
         }
 
@@ -618,47 +457,6 @@ namespace LingnanCup
         private void label36_Click(object sender, EventArgs e)
         {
 
-        }
-
-        private void button68_Click(object sender, EventArgs e)
-        {
-            if ((end & 64) != 0)
-            {
-                //重复点击则取消
-                button68.BackColor = Color.FromArgb(224, 224, 224);
-                end &= (~64);
-                Refresh_End();
-                return;
-            }
-            //哨兵仅击杀会导致4结局也无法生效，因此需要额外清空
-            //3,35,68
-
-            if ((end & 432) != 0)
-            {
-                end &= (~432);
-                button3.BackColor = Color.FromArgb(224, 224, 224);
-                button35.BackColor = Color.FromArgb(224, 224, 224);
-                button4.BackColor = Color.FromArgb(224, 224, 224);
-                button36.BackColor = Color.FromArgb(224, 224, 224);
-            }
-            end |= 64;
-            button68.BackColor = Color.Pink;
-            Refresh_End();
-        }
-
-        private void button71_Click(object sender, EventArgs e)
-        {
-            if ((special & 32) != 0)
-            {
-                //重复点击则取消
-                button71.BackColor = Color.FromArgb(224, 224, 224);
-                special &= (~32);
-                Refresh_Special();
-                return;
-            }
-            special |= 32;
-            button71.BackColor = Color.Pink;
-            Refresh_Special();
         }
 
         private void label92_Click(object sender, EventArgs e)
@@ -718,14 +516,6 @@ namespace LingnanCup
             Refresh_TemporaryRecruitment();
         }
 
-        private void textBox5_TextChanged(object sender, EventArgs e)
-        {
-            bool success = int.TryParse(textBox5.Text, out collection);
-            if (success)
-            {
-                Refresh_Collection();
-            }
-        }
 
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
@@ -744,7 +534,7 @@ namespace LingnanCup
         private void button13_Click_1(object sender, EventArgs e)
         {
             duck++;
-            Refresh_DuckBearDog();
+            Refresh_DuckBearDogMouse();
         }
 
         private void button12_Click_1(object sender, EventArgs e)
@@ -754,13 +544,13 @@ namespace LingnanCup
             {
                 duck = 0;
             }
-            Refresh_DuckBearDog();
+            Refresh_DuckBearDogMouse();
         }
 
         private void button11_Click_1(object sender, EventArgs e)
         {
             bear++;
-            Refresh_DuckBearDog();
+            Refresh_DuckBearDogMouse();
         }
 
         private void button10_Click_1(object sender, EventArgs e)
@@ -770,13 +560,13 @@ namespace LingnanCup
             {
                 bear = 0;
             }
-            Refresh_DuckBearDog(); 
+            Refresh_DuckBearDogMouse(); 
         }
 
         private void button9_Click_1(object sender, EventArgs e)
         {
             dog++;
-            Refresh_DuckBearDog();
+            Refresh_DuckBearDogMouse();
         }
 
         private void button8_Click_1(object sender, EventArgs e)
@@ -786,7 +576,7 @@ namespace LingnanCup
             {
                 dog = 0;
             }
-            Refresh_DuckBearDog();
+            Refresh_DuckBearDogMouse();
         }
 
         private void label14_Click(object sender, EventArgs e)
@@ -809,29 +599,6 @@ namespace LingnanCup
 
         }
 
-        private void button34_Click(object sender, EventArgs e)
-        {
-            if ((end & 8) != 0)
-            {
-                //重复点击则取消
-                button34.BackColor = Color.FromArgb(224, 224, 224);
-                end &= (~8);
-                Refresh_End();
-                return;
-            }
-
-            if ((end & 7) != 0)
-            {
-                end &= (~7);
-                //234不能和1同时存在，因此要先清空234位
-                button1.BackColor = Color.FromArgb(224, 224, 224);
-                button2.BackColor = Color.FromArgb(224, 224, 224);
-                button33.BackColor = Color.FromArgb(224, 224, 224);
-            }
-            end |= 8;
-            button34.BackColor = Color.Pink;
-            Refresh_End();
-        }
 
         private void label63_Click(object sender, EventArgs e)
         {
@@ -986,143 +753,6 @@ namespace LingnanCup
             label46.Text = getNum(8).ToString();
         }
 
-        private void button19_Click_1(object sender, EventArgs e)
-        {
-            emergencyFightAdd(9);
-            label44.Text = getNum(9).ToString();
-        }
-
-        private void button18_Click_1(object sender, EventArgs e)
-        {
-            emergencyFightSub(9);
-            label44.Text = getNum(9).ToString();
-        }
-
-        private void button17_Click_1(object sender, EventArgs e)
-        {
-            emergencyFightAdd(10);
-            label22.Text = getNum(10).ToString();
-        }
-
-        private void button16_Click_1(object sender, EventArgs e)
-        {
-            emergencyFightSub(10);
-            label22.Text = getNum(10).ToString();
-        }
-
-        private void button55_Click(object sender, EventArgs e)
-        {
-            emergencyFightAdd(11);
-            label59.Text = getNum(11).ToString();
-        }
-
-        private void button54_Click(object sender, EventArgs e)
-        {
-            emergencyFightSub(11);
-            label59.Text = getNum(11).ToString();
-        }
-
-        private void button53_Click(object sender, EventArgs e)
-        {
-            emergencyFightAdd(12);
-            label57.Text = getNum(12).ToString();
-        }
-
-        private void button30_Click_1(object sender, EventArgs e)
-        {
-            emergencyFightSub(12);
-            label57.Text = getNum(12).ToString();
-        }
-
-        private void button29_Click_2(object sender, EventArgs e)
-        {
-            emergencyFightAdd(13);
-            label55.Text = getNum(13).ToString();
-        }
-
-        private void button28_Click_1(object sender, EventArgs e)
-        {
-            emergencyFightSub(13);
-            label55.Text = getNum(13).ToString();
-        }
-
-        private void button67_Click(object sender, EventArgs e)
-        {
-            emergencyFightAdd(14);
-            label77.Text = getNum(14).ToString();
-        }
-
-        private void button66_Click(object sender, EventArgs e)
-        {
-            emergencyFightSub(14);
-            label77.Text = getNum(14).ToString();
-        }
-
-        private void button65_Click(object sender, EventArgs e)
-        {
-            emergencyFightAdd(15);
-            label75.Text = getNum(15).ToString();
-        }
-
-        private void button64_Click(object sender, EventArgs e)
-        {
-            emergencyFightSub(15);
-            label75.Text = getNum(15).ToString();
-        }
-
-        private void label75_Click(object sender, EventArgs e)
-        {
-            
-        }
-
-        private void button63_Click(object sender, EventArgs e)
-        {
-            emergencyFightAdd(16);
-            label73.Text = getNum(16).ToString();
-        }
-
-        private void button62_Click(object sender, EventArgs e)
-        {
-            emergencyFightSub(16);
-            label73.Text = getNum(16).ToString();
-        }
-
-        private void button61_Click(object sender, EventArgs e)
-        {
-            emergencyFightAdd(17);
-            label70.Text = getNum(17).ToString();
-        }
-
-        private void button60_Click(object sender, EventArgs e)
-        {
-            emergencyFightSub(17);
-            label70.Text = getNum(17).ToString();
-        }
-
-        private void button59_Click(object sender, EventArgs e)
-        {
-            emergencyFightAdd(18);
-            label68.Text = getNum(18).ToString();
-        }
-
-        private void button58_Click(object sender, EventArgs e)
-        {
-            emergencyFightSub(18);
-            label68.Text = getNum(18).ToString();
-        }
-
-        private void button57_Click(object sender, EventArgs e)
-        {
-            emergencyFightAdd(19);
-            label66.Text = getNum(19).ToString();
-        }
-
-        private void button56_Click(object sender, EventArgs e)
-        {
-            emergencyFightSub(19);
-            label66.Text = getNum(19).ToString();
-        }
-
         private void button37_Click(object sender, EventArgs e)
         {
             {
@@ -1177,103 +807,66 @@ namespace LingnanCup
 
         private void button80_Click(object sender, EventArgs e)
         {
-            if ((special & 8) != 0)
+            if ((special & 16) != 0)
             {
                 //重复点击则取消
                 button80.BackColor = Color.FromArgb(224, 224, 224);
-                special &= (~8);
+                special &= (~16);
                 Refresh_Special();
                 return;
             }
-            special |= 8;
+            if ((special & 104) != 0)
+            {
+                special &= (~104);
+                button28.BackColor = Color.FromArgb(224, 224, 224);
+                button29.BackColor = Color.FromArgb(224, 224, 224);
+                button79.BackColor = Color.FromArgb(224, 224, 224);
+            }
+            special |= 16;
             button80.BackColor = Color.Pink;
             Refresh_Special();
         }
 
         private void button79_Click(object sender, EventArgs e)
         {
-            if ((special & 16) != 0)
+            if ((special & 64) != 0)
             {
                 //重复点击则取消
                 button79.BackColor = Color.FromArgb(224, 224, 224);
-                special &= (~16);
+                special &= (~64);
                 Refresh_Special();
                 return;
             }
-            special |= 16;
+            if ((special & 56) != 0)
+            {
+                special &= (~56);
+                button29.BackColor = Color.FromArgb(224, 224, 224);
+                button28.BackColor = Color.FromArgb(224, 224, 224);
+                button80.BackColor = Color.FromArgb(224, 224, 224);
+            }
+            special |= 64;
             button79.BackColor = Color.Pink;
             Refresh_Special();
         }
 
         private void button70_Click(object sender, EventArgs e)
         {
-            if ((special & 64) != 0)
+            if ((special & 512) != 0)
             {
                 //重复点击则取消
                 button70.BackColor = Color.FromArgb(224, 224, 224);
-                special &= (~64);
+                special &= (~512);
                 Refresh_Special();
                 return;
             }
-            special |= 64;
+            if ((special & 3072) != 0)
+            {
+                special &= (~3072);
+                button43.BackColor = Color.FromArgb(224, 224, 224);
+                button34.BackColor = Color.FromArgb(224, 224, 224);
+            }
+            special |= 512;
             button70.BackColor = Color.Pink;
-            Refresh_Special();
-
-        }
-
-        private void button73_Click(object sender, EventArgs e)
-        {
-            if ((special & 128) != 0)
-            {
-                //重复点击则取消
-                button73.BackColor = Color.FromArgb(224, 224, 224);
-                special &= (~128);
-                Refresh_Special();
-                return;
-            }
-
-            if ((special & 256) != 0)
-            {
-                special &= (~256);
-                button77.BackColor = Color.FromArgb(224, 224, 224);
-            }
-            special |= 128;
-            button73.BackColor = Color.Pink;
-            Refresh_Special();
-        }
-
-        private void button77_Click(object sender, EventArgs e)
-        {
-            if ((special & 256) != 0)
-            {
-                //重复点击则取消
-                button77.BackColor = Color.FromArgb(224, 224, 224);
-                special &= (~256);
-                Refresh_Special();
-                return;
-            }
-
-            if ((special & 128) != 0)
-            {
-                special &= (~128);
-                button73.BackColor = Color.FromArgb(224, 224, 224);
-            }
-            special |= 256;
-            button77.BackColor = Color.Pink;
-            Refresh_Special();
-        }
-
-        private void button72_Click(object sender, EventArgs e)
-        {
-            heroKill++;
-            if(heroKill == 6)
-            {
-                heroKill = 0;
-                special ^= 256;
-                special |= 128;
-                button77.BackColor = Color.FromArgb(224, 224, 224);
-                button73.BackColor = Color.Pink;
-            }
             Refresh_Special();
         }
 
@@ -1287,124 +880,26 @@ namespace LingnanCup
             Refresh_Special();
         }
 
-        private void button74_Click(object sender, EventArgs e)
-        {
-            if ((special & 512) != 0)
-            {
-                //重复点击则取消
-                button74.BackColor = Color.FromArgb(224, 224, 224);
-                special &= (~512);
-                Refresh_Special();
-                return;
-            }
-
-            if ((special & 1024) != 0)
-            {
-                special &= (~1024);
-                button78.BackColor = Color.FromArgb(224, 224, 224);
-            }
-            special |= 512;
-            button74.BackColor = Color.Pink;
-            Refresh_Special();
-        }
-
-        private void button78_Click(object sender, EventArgs e)
-        {
-            if ((special & 1024) != 0)
-            {
-                //重复点击则取消
-                button78.BackColor = Color.FromArgb(224, 224, 224);
-                special &= (~1024);
-                Refresh_Special();
-                return;
-            }
-
-            if ((special & 512) != 0)
-            {
-                special &= (~512);
-                button74.BackColor = Color.FromArgb(224, 224, 224);
-            }
-            special |= 1024;
-            button78.BackColor = Color.Pink;
-            Refresh_Special();
-        }
-
-        private void button76_Click(object sender, EventArgs e)
-        {
-            justiceKill++;
-            if (justiceKill > 3)
-            {
-                justiceKill = 3;
-            }
-            Refresh_Special();
-        }
-
-        private void button75_Click(object sender, EventArgs e)
-        {
-            justiceKill--;
-            if (justiceKill < 0) 
-            {
-                justiceKill = 0;
-            }
-            Refresh_Special();
-        }
 
         private void button43_Click(object sender, EventArgs e)
         {
-            if ((special & 2048) != 0)
+            if ((special & 1024) != 0)
             {
                 //重复点击则取消
                 button43.BackColor = Color.FromArgb(224, 224, 224);
-                special &= (~2048);
+                special &= (~1024);
                 Refresh_Special();
                 return;
             }
-            special |= 2048;
+            if ((special & 2560) != 0)
+            {
+                special &= (~2560);
+                button70.BackColor = Color.FromArgb(224, 224, 224);
+                button34.BackColor = Color.FromArgb(224, 224, 224);
+            }
+            special |= 1024;
             button43.BackColor = Color.Pink;
             Refresh_Special();
-        }
-
-        private void textBox6_TextChanged(object sender, EventArgs e)
-        {
-            bool success = int.TryParse(textBox6.Text, out startMoney);
-            if (success)
-            {
-                Money_Change();
-            }
-        }
-
-        private void textBox7_TextChanged(object sender, EventArgs e)
-        {
-            bool success = int.TryParse(textBox7.Text, out endMoney);
-            if (success)
-            {
-                Money_Change();
-            }
-        }
-
-        private void textBox8_TextChanged(object sender, EventArgs e)
-        {
-            bool success = int.TryParse(textBox8.Text, out board);
-            if (success)
-            {
-                Refresh_Board();
-            }
-        }
-
-        private void button31_Click_1(object sender, EventArgs e)
-        {
-            if ((end & 512) != 0)
-            {
-                //重复点击则取消
-                button31.BackColor = Color.FromArgb(224, 224, 224);
-                end &= (~512);
-                Refresh_End();
-                return;
-            }
-            end |= 512;
-            button31.BackColor = Color.Pink;
-            Refresh_End();
-
         }
 
         private void button44_Click(object sender, EventArgs e)
@@ -1425,12 +920,292 @@ namespace LingnanCup
         private void button81_Click(object sender, EventArgs e)
         {
 
-            MessageBox.Show("明日方舟-萨米肉鸽计分器，使用的规则为岭南杯计分方式，感谢所有为该规则付出的人，以下排名不分先后：\n\n安大@你看到了七个字、南科大@画圆圈的圈圈、深大@银枪天马耀骑士、广工@YuAn梦、中大@hzhzh、仲恺@油漆、莞工@梦、深大@wadu、广工@儚い、华工@鹤舞苍天、广海@今予、中大@漠烟沉、广金@水镜、广海@yu\n\n如有规则上的疑问可以提issue，我会转给负责人深大@银枪天马耀骑士，广工@YuAn梦咨询\n\n欢迎加入广东高校联合群：813804119，记得标注学校\n", "鸣谢");
+            MessageBox.Show("明日方舟-萨卡兹肉鸽计分器，使用的规则为岭南杯计分方式，感谢所有为该规则付出的人。\n\n欢迎加入广东高校联合群：813804119，记得标注学校\n", "鸣谢");
         }
 
         private void label91_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void label91_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label31_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button83_Click(object sender, EventArgs e)
+        {
+            mouse++;
+            Refresh_DuckBearDogMouse(); 
+        }
+
+        private void label32_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button82_Click(object sender, EventArgs e)
+        {
+            mouse--;
+            if (mouse < 0)
+            {
+                mouse = 0;
+            }
+            Refresh_DuckBearDogMouse();
+        }
+
+        private void label20_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label92_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button85_Click(object sender, EventArgs e)
+        {
+            moneyBonus++;
+            Money_Change();
+        }
+
+        private void button84_Click(object sender, EventArgs e)
+        {
+            moneyBonus--;
+            Money_Change();
+        }
+
+        private void label94_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label88_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if(isGetHatred == true)
+            {
+                button3.BackColor = Color.FromArgb(224, 224, 224);
+                isGetHatred = false;
+                Refresh_Special();
+                return;
+            }
+            isGetHatred = true;
+            button3.BackColor = Color.Pink;
+            Refresh_Special();
+        }
+
+        private void button19_Click(object sender, EventArgs e)
+        {
+            hatredEmerg++;
+            Refresh_Special();
+        }
+
+        private void button18_Click(object sender, EventArgs e)
+        {
+            hatredEmerg--;
+            if (hatredEmerg < 0)
+            {
+                hatredEmerg = 0;
+            }
+            Refresh_Special();
+        }
+
+        private void label20_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            if (isEW == true)
+            {
+                button4.BackColor = Color.FromArgb(224, 224, 224);
+                isEW = false;
+                Refresh_Special();
+                return;
+            }
+            isEW = true;
+            button4.BackColor = Color.Pink;
+            Refresh_Special();
+        }
+
+        private void button16_Click(object sender, EventArgs e)
+        {
+            if (isBluePrint == true)
+            {
+                button17.BackColor = Color.FromArgb(224, 224, 224);
+                isBluePrint = false;
+            }
+
+            if (isMagic == true)
+            {
+                button16.BackColor = Color.FromArgb(224, 224, 224);
+                isMagic = false;
+                Refresh_Special();
+                return;
+            }
+
+            isMagic = true;
+            button16.BackColor = Color.Pink;
+            Refresh_Special();
+        }
+
+        private void button17_Click(object sender, EventArgs e)
+        {
+            if (isMagic == true)
+            {
+                button16.BackColor = Color.FromArgb(224, 224, 224);
+                isMagic = false;
+            }
+
+            if (isBluePrint == true)
+            {
+                button17.BackColor = Color.FromArgb(224, 224, 224);
+                isBluePrint = false;
+                Refresh_Special();
+                return;
+            }
+
+
+            isBluePrint = true;
+            button17.BackColor = Color.Pink;
+            Refresh_Special();
+        }
+
+        private void button31_Click(object sender, EventArgs e)
+        {
+            if ((special & 256) != 0)
+            {
+                //重复点击则取消
+                button31.BackColor = Color.FromArgb(224, 224, 224);
+                special &= (~256);
+                Refresh_Special();
+                return;
+            }
+            if ((special & 128) != 0)
+            {
+                special &= (~128);
+                button30.BackColor = Color.FromArgb(224, 224, 224);
+            }
+            special |= 256;
+            button31.BackColor = Color.Pink;
+            Refresh_Special();
+        }
+
+        private void button30_Click(object sender, EventArgs e)
+        {
+            if ((special & 128) != 0)
+            {
+                //重复点击则取消
+                button30.BackColor = Color.FromArgb(224, 224, 224);
+                special &= (~128);
+                Refresh_Special();
+                return;
+            }
+            if ((special & 256) != 0)
+            {
+                special &= (~256);
+                button31.BackColor = Color.FromArgb(224, 224, 224);
+            }
+            special |= 128;
+            button30.BackColor = Color.Pink;
+            Refresh_Special();
+        }
+
+        private void button28_Click(object sender, EventArgs e)
+        {
+            if ((special & 8) != 0)
+            {
+                //重复点击则取消
+                button28.BackColor = Color.FromArgb(224, 224, 224);
+                special &= (~8);
+                Refresh_Special();
+                return;
+            }
+            if ((special & 112) != 0)
+            {
+                special &= (~112);
+                button80.BackColor = Color.FromArgb(224, 224, 224);
+                button29.BackColor = Color.FromArgb(224, 224, 224);
+                button79.BackColor = Color.FromArgb(224, 224, 224);
+            }
+            special |= 8;
+            button28.BackColor = Color.Pink;
+            Refresh_Special();
+        }
+
+        private void label80_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button29_Click_1(object sender, EventArgs e)
+        {
+            if ((special & 32) != 0)
+            {
+                //重复点击则取消
+                button29.BackColor = Color.FromArgb(224, 224, 224);
+                special &= (~32);
+                Refresh_Special();
+                return;
+            }
+            if ((special & 88) != 0)
+            {
+                special &= (~88);
+                button79.BackColor = Color.FromArgb(224, 224, 224);
+                button28.BackColor = Color.FromArgb(224, 224, 224);
+                button80.BackColor = Color.FromArgb(224, 224, 224);
+            }
+            special |= 32;
+            button29.BackColor = Color.Pink;
+            Refresh_Special();
+        }
+
+        private void button34_Click(object sender, EventArgs e)
+        {
+            if ((special & 2048) != 0)
+            {
+                //重复点击则取消
+                button34.BackColor = Color.FromArgb(224, 224, 224);
+                special &= (~2048);
+                Refresh_Special();
+                return;
+            }
+            if ((special & 1536) != 0)
+            {
+                special &= (~1536);
+                button70.BackColor = Color.FromArgb(224, 224, 224);
+                button43.BackColor = Color.FromArgb(224, 224, 224);
+            }
+            special |= 2048;
+            button34.BackColor = Color.Pink;
+            Refresh_Special();
+        }
+
+        private void button35_Click(object sender, EventArgs e)
+        {
+            if ((special & 4096) != 0)
+            {
+                //重复点击则取消
+                button35.BackColor = Color.FromArgb(224, 224, 224);
+                special &= (~4096);
+                Refresh_Special();
+                return;
+            }
+            special |= 4096;
+            button35.BackColor = Color.Pink;
+            Refresh_Special();
         }
     }
 }
